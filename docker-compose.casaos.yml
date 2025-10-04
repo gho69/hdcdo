@@ -1,0 +1,38 @@
+services:
+  hdcdo-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.casaos
+    container_name: hdcdo-management
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - /mnt/disk2/AppData/hdcdo:/app/data
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - hdcdo-network
+    labels:
+      - "casaos.name=HDCDO Management"
+      - "casaos.description=Sistema di gestione HR e risorse aziendali"
+      - "casaos.category=Business"
+      - "casaos.port=3000"
+      - "casaos.scheme=http"
+      - "casaos.web_ui=true"
+      - "casaos.icon=https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  hdcdo_data:
+    driver: local
+
+networks:
+  hdcdo-network:
+    driver: bridge
